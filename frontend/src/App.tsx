@@ -9,7 +9,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { UpdatePasswordPage } from "./pages/UpdatePasswordPage";
 import { POCKETBASE_URL } from "./utils/config";
-import { AntdInferencer } from "@refinedev/inferencer/antd";
+import { AntdCreateInferencer, AntdEditInferencer, AntdInferencer, AntdListInferencer, AntdShowInferencer } from "@refinedev/inferencer/antd";
 
 const pb = new PocketBase(POCKETBASE_URL);
 
@@ -69,12 +69,12 @@ export const App = () =>
           />
           <Route index path="/custom" element={<CustomPage />} />
           <Route path="/users" element={<AntdInferencer />} />
-          {/* <Route path="/users">
-            <Route index element={<HeadlessListInferencer resource="users" />} />
-            <Route path="create" element={<HeadlessCreateInferencer resource="users" />} />
-            <Route path="edit/:id" element={<HeadlessEditInferencer resource="users" />} />
-            <Route path="show/:id" element={<HeadlessShowInferencer resource="users" />} />
-          </Route> */}
+          <Route path="/users">
+            <Route index element={<AntdListInferencer resource="users" />} />
+            <Route path="create" element={<AntdCreateInferencer resource="users" />} />
+            <Route path="edit/:id" element={<AntdEditInferencer resource="users" />} />
+            <Route path="show/:id" element={<AntdShowInferencer resource="users" />} />
+          </Route>
         </Route>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
