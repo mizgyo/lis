@@ -25,7 +25,12 @@
   "devDependencies": {
     "concurrently": "^8.2.0"
   },
-  "keywords": ["pocketbase", "react-admin", "full-stack"],
+  "keywords": [
+    "pocketbase",
+    "react-admin",
+    "full-stack"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

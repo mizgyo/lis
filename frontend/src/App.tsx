@@ -1,38 +1,87 @@
-import { Admin, Resource } from 'react-admin';
-import type { DataProvider, AuthProvider } from 'react-admin';
-import { pocketbaseDataProvider } from './providers/dataProvider';
-import { authProvider } from './providers/authProvider';
-import { UserList } from './components/UserList';
+import { Authenticated, ErrorComponent, Refine } from "@refinedev/core";
+import routerBindings, { DocumentTitleHandler, NavigateToResource } from "@refinedev/react-router-v6";
+import PocketBase from "pocketbase";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { type AuthOptions, authProvider, dataProvider, liveProvider } from "refine-pocketbase";
+import { CustomPage } from "./pages/CustomPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { UpdatePasswordPage } from "./pages/UpdatePasswordPage";
+import { POCKETBASE_URL } from "./utils/config";
+import { AntdInferencer } from "@refinedev/inferencer/antd";
 
-// Dashboard component
-const Dashboard = () => (
-  <div style={{ padding: 20 }}>
-    <h1>Welcome to LIS Admin Panel</h1>
-    <p>Your Pocketbase backend is connected and ready!</p>
-    <p>To add resources, create collections in your Pocketbase admin panel and add them as Resource components below.</p>
-    <div style={{ marginTop: 20 }}>
-      <h3>Getting Started:</h3>
-      <ol>
-        <li>Go to <a href="http://localhost:8090/_/" target="_blank" rel="noopener noreferrer">Pocketbase Admin</a></li>
-        <li>Create collections for your data</li>
-        <li>Add Resource components to this app</li>
-        <li>Start managing your data!</li>
-      </ol>
-    </div>
-  </div>
-);
+const pb = new PocketBase(POCKETBASE_URL);
 
-function App() {
-  return (
-    <Admin
-      dataProvider={pocketbaseDataProvider as DataProvider}
-      authProvider={authProvider as AuthProvider}
-      dashboard={Dashboard}
-      title="LIS Admin"
-    >
-      <Resource name="users" list={UserList} />
-    </Admin>
-  );
+const authOptions: AuthOptions = {
+  registerRedirectTo: "/users",
+  loginRedirectTo: "/users",
+  updatePasswordRedirectTo: "/login"
 }
 
-export default App
+const providers = {
+  dataProvider: dataProvider(pb),
+  liveProvider: liveProvider(pb),
+  authProvider: authProvider(pb, authOptions),
+}
+
+export const App = () =>
+  <BrowserRouter>
+    <Refine
+      {...providers}
+      routerProvider={routerBindings}
+      resources={[
+        {
+          name: "users",
+          list: "/users",
+          create: "/users/create",
+          edit: "/users/edit/:id",
+          show: "/users/show/:id",
+          meta: {
+            canDelete: true,
+          },
+        },
+        {
+          name: "custom",
+          list: "/custom",
+        },
+      ]}
+      options={{
+        liveMode: "auto",
+        syncWithLocation: true,
+        warnWhenUnsavedChanges: true,
+        useNewQueryKeys: true,
+        projectId: "K2WTtI-rl83Fw-Fn1FJF",
+      }}
+    >
+      <Routes>
+        <Route element={
+          <Authenticated
+            key="authenticated-inner"
+            redirectOnFail="/login"
+          >
+            <Outlet />
+          </Authenticated>
+        }>
+          <Route
+            index
+            element={<NavigateToResource resource="users" />}
+          />
+          <Route index path="/custom" element={<CustomPage />} />
+          <Route path="/users" element={<AntdInferencer />} />
+          {/* <Route path="/users">
+            <Route index element={<HeadlessListInferencer resource="users" />} />
+            <Route path="create" element={<HeadlessCreateInferencer resource="users" />} />
+            <Route path="edit/:id" element={<HeadlessEditInferencer resource="users" />} />
+            <Route path="show/:id" element={<HeadlessShowInferencer resource="users" />} />
+          </Route> */}
+        </Route>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/update-password" element={<UpdatePasswordPage />} />
+        <Route path="*" element={<ErrorComponent />} />
+      </Routes>
+      <DocumentTitleHandler />
+    </Refine>
+  </BrowserRouter>
