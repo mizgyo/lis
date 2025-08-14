@@ -1,7 +1,8 @@
-import { Admin } from 'react-admin';
+import { Admin, Resource } from 'react-admin';
 import type { DataProvider, AuthProvider } from 'react-admin';
 import { pocketbaseDataProvider } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
+import { UserList } from './components/UserList';
 
 // Dashboard component
 const Dashboard = () => (
@@ -29,8 +30,7 @@ function App() {
       dashboard={Dashboard}
       title="LIS Admin"
     >
-      {/* Add your resources here based on your Pocketbase collections */}
-      {/* Example: <Resource name="users" list={UserList} /> */}
+      <Resource name="users" list={UserList} />
     </Admin>
   );
 }
