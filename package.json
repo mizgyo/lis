@@ -1,0 +1,29 @@
+{
+  "name": "lis",
+  "version": "1.0.0",
+  "description": "Full-stack application with Pocketbase backend and React Admin frontend",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && make up",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "stop": "cd backend && make down",
+    "clean": "cd backend && make clean && cd ../frontend && rm -rf node_modules dist",
+    "install:frontend": "cd frontend && npm install",
+    "logs": "cd backend && make logs",
+    "backup": "cd backend && make backup",
+    "deploy:backend": "cd backend && flyctl deploy",
+    "deploy:frontend": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": ["pocketbase", "react-admin", "full-stack"],
+  "author": "",
+  "license": "MIT"
+}

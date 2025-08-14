@@ -35,63 +35,84 @@ A full-stack application with Pocketbase backend and React Admin frontend.
 
 ### Getting Started
 
-#### Backend (Pocketbase)
+#### Quick Start (Recommended)
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/mizgyo/lis.git
-   cd lis/backend
+   cd lis
    ```
 
-2. Start the development environment:
+2. Install all dependencies:
    ```bash
-   make up
-   # or
-   docker-compose up -d
+   make install
    ```
 
-3. Access the backend admin interface:
-   - Local: http://localhost:8090/_/
-   - Create your first admin account
-
-#### Frontend (React Admin)
-
-1. Navigate to frontend directory:
+3. Start both backend and frontend:
    ```bash
-   cd ../frontend
+   make dev
    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+4. Access the applications:
+   - **Frontend**: http://localhost:5173
+   - **Backend Admin**: http://localhost:8090/_/
+   - **Backend API**: http://localhost:8090
 
-3. Copy environment file:
-   ```bash
-   cp .env.example .env.local
-   ```
+5. Create your first admin account in the Pocketbase admin panel
 
-4. Start the frontend:
-   ```bash
-   npm run dev
-   ```
+#### Manual Setup (Alternative)
 
-5. Open http://localhost:5173 in your browser
+If you prefer to start services separately:
+
+**Backend:**
+```bash
+cd backend && make up
+```
+
+**Frontend:**
+```bash
+cd frontend && npm install && npm run dev
+```
 
 ### Available Commands
 
-#### Backend
+#### Root Level Commands (Recommended)
+
+```bash
+# Development
+make dev         # Start both backend and frontend
+make start       # Alias for 'make dev'
+make stop        # Stop all services
+make install     # Install all dependencies
+
+# Monitoring
+make logs        # View backend logs
+make health      # Check backend health
+make status      # Show service status
+
+# Building & Deployment
+make build       # Build frontend for production
+make deploy-backend   # Deploy backend to Fly.io
+make deploy-frontend  # Build frontend for Vercel
+
+# Maintenance
+make backup      # Create data backup
+make clean       # Clean all dependencies and builds
+make help        # Show all available commands
+```
+
+#### Individual Service Commands
+
+**Backend:**
 ```bash
 cd backend
 make up      # Start Pocketbase
 make down    # Stop Pocketbase
 make logs    # View logs
 make backup  # Create data backup
-make clean   # Clean up containers
-make help    # Show all commands
 ```
 
-#### Frontend
+**Frontend:**
 ```bash
 cd frontend
 npm run dev     # Start development server
