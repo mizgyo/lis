@@ -1,9 +1,8 @@
-import { AuthProvider } from 'react-admin';
 import { pb } from './dataProvider';
 
-export const authProvider: AuthProvider = {
+export const authProvider = {
   // Called when the user attempts to log in
-  login: async ({ username, password }) => {
+  login: async ({ username, password }: { username: string; password: string }) => {
     try {
       // Try to authenticate with email first, then with username
       let authData;
@@ -32,7 +31,7 @@ export const authProvider: AuthProvider = {
   },
 
   // Called when the user clicks on the logout button
-  logout: async () => {
+  logout: async (): Promise<void> => {
     try {
       pb.authStore.clear();
       localStorage.removeItem('pocketbase_auth');
@@ -44,7 +43,7 @@ export const authProvider: AuthProvider = {
   },
 
   // Called when the API returns an error
-  checkError: async ({ status }) => {
+  checkError: async ({ status }: { status: number }): Promise<void> => {
     if (status === 401 || status === 403) {
       pb.authStore.clear();
       localStorage.removeItem('pocketbase_auth');
@@ -54,7 +53,7 @@ export const authProvider: AuthProvider = {
   },
 
   // Called when the user navigates to a new location to check authentication
-  checkAuth: async () => {
+  checkAuth: async (): Promise<void> => {
     try {
       // Check if there's a valid token in PocketBase auth store
       if (pb.authStore.isValid) {
@@ -86,7 +85,7 @@ export const authProvider: AuthProvider = {
   },
 
   // Called when the user navigates to a new location to get permissions
-  getPermissions: async () => {
+  getPermissions: async (): Promise<string> => {
     try {
       if (pb.authStore.isValid && pb.authStore.record) {
         // You can implement role-based permissions here
@@ -101,7 +100,7 @@ export const authProvider: AuthProvider = {
   },
 
   // Called when the user profile is displayed to get user identity
-  getIdentity: async () => {
+  getIdentity: async (): Promise<{ id: string; fullName: string; avatar?: string }> => {
     try {
       if (pb.authStore.isValid && pb.authStore.record) {
         const user = pb.authStore.record;

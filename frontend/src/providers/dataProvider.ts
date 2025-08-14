@@ -1,59 +1,11 @@
-import { DataProvider } from 'react-admin';
 import PocketBase from 'pocketbase';
 
 const pb = new PocketBase(import.meta.env.VITE_POCKETBASE_URL || 'http://localhost:8090');
 
-// Type definitions for React Admin data provider parameters
-interface GetListParams {
-  pagination: { page: number; perPage: number };
-  sort: { field: string; order: string };
-  filter: any;
-}
-
-interface GetOneParams {
-  id: string;
-}
-
-interface GetManyParams {
-  ids: string[];
-}
-
-interface GetManyReferenceParams {
-  target: string;
-  id: string;
-  pagination: { page: number; perPage: number };
-  sort: { field: string; order: string };
-  filter: any;
-}
-
-interface CreateParams {
-  data: any;
-}
-
-interface UpdateParams {
-  id: string;
-  data: any;
-  previousData?: any;
-}
-
-interface UpdateManyParams {
-  ids: string[];
-  data: any;
-}
-
-interface DeleteParams {
-  id: string;
-  previousData?: any;
-}
-
-interface DeleteManyParams {
-  ids: string[];
-}
-
-export const pocketbaseDataProvider: DataProvider = {
-  getList: async (resource: string, params: GetListParams) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+export const pocketbaseDataProvider = {
+  getList: async (resource: string, params: { pagination?: { page: number; perPage: number }; sort?: { field: string; order: string }; filter?: Record<string, unknown> }) => {
+    const { page = 1, perPage = 10 } = params.pagination || {};
+    const { field = 'id', order = 'ASC' } = params.sort || {};
     
     // Build filter query from React Admin filters
     let filter = '';
@@ -85,9 +37,9 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  getOne: async (resource: string, params: GetOneParams) => {
+  getOne: async (resource: string, params: { id: string | number }) => {
     try {
-      const record = await pb.collection(resource).getOne(params.id);
+      const record = await pb.collection(resource).getOne(String(params.id));
       return {
         data: { ...record, id: record.id },
       };
@@ -97,7 +49,7 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  getMany: async (resource: string, params: GetManyParams) => {
+  getMany: async (resource: string, params: { ids: (string | number)[] }) => {
     try {
       const filter = params.ids.map(id => `id="${id}"`).join(' || ');
       const result = await pb.collection(resource).getList(1, params.ids.length, {
@@ -113,12 +65,12 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  getManyReference: async (resource: string, params: GetManyReferenceParams) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+  getManyReference: async (resource: string, params: { target: string; id: string | number; pagination?: { page: number; perPage: number }; sort?: { field: string; order: string }; filter?: Record<string, unknown> }) => {
+    const { page = 1, perPage = 10 } = params.pagination || {};
+    const { field = 'id', order = 'ASC' } = params.sort || {};
 
     try {
-      let filter = `${params.target}="${params.id}"`;
+      let filter = `${params.target}="${String(params.id)}"`;
       
       if (params.filter) {
         const additionalFilters = Object.entries(params.filter)
@@ -150,7 +102,7 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  create: async (resource: string, params: CreateParams) => {
+  create: async (resource: string, params: { data: Record<string, unknown> }) => {
     try {
       const record = await pb.collection(resource).create(params.data);
       return {
@@ -162,9 +114,9 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  update: async (resource: string, params: UpdateParams) => {
+  update: async (resource: string, params: { id: string | number; data: Record<string, unknown> }) => {
     try {
-      const record = await pb.collection(resource).update(params.id, params.data);
+      const record = await pb.collection(resource).update(String(params.id), params.data);
       return {
         data: { ...record, id: record.id },
       };
@@ -174,10 +126,10 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  updateMany: async (resource: string, params: UpdateManyParams) => {
+  updateMany: async (resource: string, params: { ids: (string | number)[]; data: Record<string, unknown> }) => {
     try {
       const promises = params.ids.map(id =>
-        pb.collection(resource).update(id, params.data)
+        pb.collection(resource).update(String(id), params.data)
       );
       
       await Promise.all(promises);
@@ -191,9 +143,9 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  delete: async (resource: string, params: DeleteParams) => {
+  delete: async (resource: string, params: { id: string | number }) => {
     try {
-      await pb.collection(resource).delete(params.id);
+      await pb.collection(resource).delete(String(params.id));
       return {
         data: { id: params.id },
       };
@@ -203,10 +155,10 @@ export const pocketbaseDataProvider: DataProvider = {
     }
   },
 
-  deleteMany: async (resource: string, params: DeleteManyParams) => {
+  deleteMany: async (resource: string, params: { ids: (string | number)[] }) => {
     try {
       const promises = params.ids.map(id =>
-        pb.collection(resource).delete(id)
+        pb.collection(resource).delete(String(id))
       );
       
       await Promise.all(promises);
