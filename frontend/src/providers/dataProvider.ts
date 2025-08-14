@@ -1,7 +1,54 @@
-import { DataProvider, GetListParams, GetOneParams, GetManyParams, GetManyReferenceParams, CreateParams, UpdateParams, UpdateManyParams, DeleteParams, DeleteManyParams, fetchUtils } from 'react-admin';
+import { DataProvider } from 'react-admin';
 import PocketBase from 'pocketbase';
 
 const pb = new PocketBase(import.meta.env.VITE_POCKETBASE_URL || 'http://localhost:8090');
+
+// Type definitions for React Admin data provider parameters
+interface GetListParams {
+  pagination: { page: number; perPage: number };
+  sort: { field: string; order: string };
+  filter: any;
+}
+
+interface GetOneParams {
+  id: string;
+}
+
+interface GetManyParams {
+  ids: string[];
+}
+
+interface GetManyReferenceParams {
+  target: string;
+  id: string;
+  pagination: { page: number; perPage: number };
+  sort: { field: string; order: string };
+  filter: any;
+}
+
+interface CreateParams {
+  data: any;
+}
+
+interface UpdateParams {
+  id: string;
+  data: any;
+  previousData?: any;
+}
+
+interface UpdateManyParams {
+  ids: string[];
+  data: any;
+}
+
+interface DeleteParams {
+  id: string;
+  previousData?: any;
+}
+
+interface DeleteManyParams {
+  ids: string[];
+}
 
 export const pocketbaseDataProvider: DataProvider = {
   getList: async (resource: string, params: GetListParams) => {
