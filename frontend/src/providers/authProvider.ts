@@ -4,16 +4,8 @@ export const authProvider = {
   // Called when the user attempts to log in
   login: async ({ username, password }: { username: string; password: string }) => {
     try {
-      // Try to authenticate with email first, then with username
-      let authData;
-      try {
-        // Try email authentication first
-        authData = await pb.collection('users').authWithPassword(username, password);
-      } catch (emailError) {
-        // If email fails, it might be a username, but PocketBase only supports email
-        // For username support, you'd need to first query the user by username to get email
-        throw emailError;
-      }
+      // Try to authenticate with email
+      const authData = await pb.collection('users').authWithPassword(username, password);
 
       if (authData.token) {
         // Store user info in localStorage for persistence

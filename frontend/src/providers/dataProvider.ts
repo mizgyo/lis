@@ -2,6 +2,7 @@ import PocketBase from 'pocketbase';
 
 const pb = new PocketBase(import.meta.env.VITE_POCKETBASE_URL || 'http://localhost:8090');
 
+// React Admin compatible data provider
 export const pocketbaseDataProvider = {
   getList: async (resource: string, params: { pagination?: { page: number; perPage: number }; sort?: { field: string; order: string }; filter?: Record<string, unknown> }) => {
     const { page = 1, perPage = 10 } = params.pagination || {};

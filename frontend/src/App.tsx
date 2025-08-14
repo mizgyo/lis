@@ -1,4 +1,5 @@
 import { Admin } from 'react-admin';
+import type { DataProvider, AuthProvider } from 'react-admin';
 import { pocketbaseDataProvider } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
 
@@ -23,8 +24,8 @@ const Dashboard = () => (
 function App() {
   return (
     <Admin
-      dataProvider={pocketbaseDataProvider as any}
-      authProvider={authProvider as any}
+      dataProvider={pocketbaseDataProvider as DataProvider}
+      authProvider={authProvider as AuthProvider}
       dashboard={Dashboard}
       title="LIS Admin"
     >
